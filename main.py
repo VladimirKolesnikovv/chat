@@ -4,6 +4,8 @@ from pywebio import start_server
 from pywebio.input import *
 from pywebio.output import *
 from pywebio.session import defer_call, info as session_info, run_async, run_js
+from datetime import datetime
+
 
 chat_msgs = []
 online_users = set()
@@ -32,12 +34,14 @@ async def main():
         data = await input_group(" Новое сообщение", [
             input(placeholder="Текст сообщения ...", name="msg"),
             actions(name="cmd", buttons=["Отправить", {'label': "Выйти из чата", 'type': 'cancel'}])
-        ], validate=lambda m: ('msg', "Введите текст сообщения!") if m["cmd"] == "Отправить" and not m['msg'] else None)
+        ], validate=lambda m: ('msg', "Введите текст сообщения!") if
+        m["cmd"] == "Отправить" and not m['msg'] else None)
 
         if data is None:
             break
 
-        msg_box.append(put_markdown(f"`{nickname}`: {data['msg']}"))
+        current_time = datetime.now()
+        msg_box.append(put_markdown(f"`{nickname} {current_time}`:\n {data['msg']}"))
         chat_msgs.append((nickname, data['msg']))
 
     refresh_task.close()
